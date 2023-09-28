@@ -6,6 +6,7 @@ import {
   AuthStatus,
   CheckTokenResponse,
   LoginResponse,
+  RegisterResponse,
   User,
 } from '../interfaces';
 
@@ -38,6 +39,16 @@ export class AuthService {
     const body = { email, password };
 
     return this.http.post<LoginResponse>(url, body).pipe(
+      map(({ user, token }) => this.setAuthentication(user,token)),
+      catchError((err) => throwError(() => err.error.message))
+    );
+  }
+
+  register(email: string, password: string, name:string): Observable<boolean> {
+    const url = `${this.baseUrl}/auth/register`;
+    const body = { email, password, name };
+
+    return this.http.post<RegisterResponse>(url, body).pipe(
       map(({ user, token }) => this.setAuthentication(user,token)),
       catchError((err) => throwError(() => err.error.message))
     );
